@@ -7,7 +7,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 HOST_SHARED_PATH = tempfile.mkdtemp()
 
 # Base
-DEBUG = True
+DEBUG = False
 
 # API
 API_VERSION = "v0.1"
