@@ -22,7 +22,7 @@ def device_status_daemon():
         if devices:
             for device_id in devices:
                 vm_status = get_vm_status(device_id)
-                if device_id in vms and vm_status is not 0:
+                if device_id in vms and vm_status > 2:
                     try:
                         print("Remove the unused vm -> " + device_id)
                         remove_vm_clone(vm)
