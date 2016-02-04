@@ -1,0 +1,22 @@
+/*.pyc
+*.pyc
+.idea/
+/*.iml
+
+# Virtualenv
+/venv/*
+/venv/.Python
+/venv/pip-selfcheck.json
+/venv/bin
+/venv/lib
+/venv/include
+
+# Logs
+*.log
+*.pid
+
+# Celery
+celerybeat-schedule
+
+# Vagrant
+.vagrant
