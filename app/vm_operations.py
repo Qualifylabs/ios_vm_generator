@@ -118,7 +118,6 @@ def clone_vm(base_name, clone_name=None, clone_order=get_number_of_vm()):
         # TODO : Check for ios-webkit-debug-proxy port requirement
         portrule = 'portrule1,tcp,,%s,,4723' % str(port)
         vboxmanage.modifyvm(clone_name, '--natpf1', portrule)
-
         vboxmanage.sharedfolder.add(
             clone_name, "--name", "sharedfolder", "--hostpath", HOST_SHARED_PATH)
         filename = "%s/%s_%s" % (HOST_SHARED_PATH, clone_name, port)
