@@ -33,9 +33,8 @@ def device_status_daemon():
                     clone_and_start_vm(clone_name=device_id)
         elif vms:
             for vm in vms:
-                # Fix-it
-                if vm == "a1ef66f78b8357bdaa4d849e89c1070eabbfd521":
-                    print("remove vm")
+                if vm != DEFAULT_BOX:
+                    print("Remove vm -> " + vm)
                     remove_vm_clone(vm)
 
     t = threading.Timer(5.0, procedure)
