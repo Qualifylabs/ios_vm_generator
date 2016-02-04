@@ -19,5 +19,5 @@ API_PORT = None
 LOG_FILE = "/var/log/ios-vm-generator.log"
 
 # Image
-DEFAULT_BOX = "test"
-BOX_SNAPSHOT = "v1"
+DEFAULT_BOX = "qualify-ios"
+BOX_SNAPSHOT = "v1.0"
