@@ -26,7 +26,7 @@ def device_status_daemon():
                     try:
                         print("Remove the unused vm -> " + device_id)
                         remove_vm_clone(vm)
-                    except as Exception e:
+                    except Exception as e:
                         print(e)
                         # TODO: Handle if could not delete
                 elif device_id not in vms:
@@ -54,7 +54,8 @@ def get_list_usb_devices():
         devices = []
         for uuid in result.split('\n'):
             devices.append(uuid)
-    except:
+    except Exception as e:
+        print(e)
         return None
     else:
         return devices
@@ -64,7 +65,8 @@ def add_usb_filter(udid):
     try:
         vboxmanage.usbfilter.add(
             "0", "--target", udid, "--name", "iOS_Device", "--serialnumber", udid)
-    except:
+    except Exception as e:
+        print(e)
         return False
     return True
 
@@ -82,7 +84,8 @@ def get_vm_list():
         for vm in vms.split('\n'):
             vm_list.append(str(vm))
         return vm_list
-    except:
+    except Exception as e:
+        print(e)
         return []
 
 
@@ -94,6 +97,7 @@ def start_vm(vm_name):
         else:
             return False
     except Exception as e:
+        print(e)
         remove_vm_clone(vm_name)
         return False
 
@@ -143,7 +147,8 @@ def is_vm_occupied(vm_name):
         grep(grep(vboxmanage.showvminfo(vm_name), "-A", "2",
                   'Currently Attached USB Devices:'), 'UUID')
         return True
-    except:
+    except Exception as e:
+        print(e)
         return False
 
 
@@ -154,7 +159,8 @@ def shutdown_vm(vm_name):
             return True
         else:
             return False
-    except:
+    except Exception as e:
+        print(e)
         return False
 
 
@@ -174,7 +180,8 @@ def get_vm_status(vm_name):
         else:  # poweredoff or aborted
             status = 9
         return status
-    except:
+    except Exception as e:
+        print(e)
         status = -1
         return status
 
@@ -200,7 +207,9 @@ def _remove_clone_folder(clone_name):
         clone_path = vbox_path + '/' + clone_name
         shutil.rmtree(clone_path)
         return True
-    except OSError:
+    except OSError as e:
+        print(e)
         return True
-    except:
+    except Exception as e:
+        print(e)
         return False
