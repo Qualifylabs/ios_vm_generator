@@ -16,7 +16,7 @@ API_IP = "localhost"
 API_PORT = None
 
 # Log Files
-LOG_FILE = "/var/log/ios-vm-generator.log"
+LOG_FILE = "/var/log/ios-vm-generator/ios-vm-generator.log"
 
 # Image
 DEFAULT_BOX = "qualify-ios"
