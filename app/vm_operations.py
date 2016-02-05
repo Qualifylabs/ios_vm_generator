@@ -124,7 +124,6 @@ def clone_vm(base_name, clone_name=None):
         _remove_clone_folder(clone_name)
         vboxmanage.clonevm(base_name, '--snapshot', BOX_SNAPSHOT, '--name',
                            clone_name, '--options', 'link', '--mode', 'machine', '--register')
-        # TODO : Check for ios-webkit-debug-proxy port requirement
         port = get_new_port()
         portrule = 'portrule1,tcp,,%s,,4723' % str(port)
         vboxmanage.modifyvm(clone_name, '--natpf1', portrule)
