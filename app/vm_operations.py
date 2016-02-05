@@ -53,9 +53,9 @@ def get_list_usb_devices():
         result = sed(sed(grep(vboxmanage.list.usbhost(), "SerialNumber"),
                          "-e s/SerialNumber://g"), "-e s/\ //g").strip()
         devices = []
-        for uuid in result.split('\n'):
-            if len(uuid) is 40:
-                devices.append(uuid)
+        for udid in result.split('\n'):
+            if len(udid) is 40:
+                devices.append(udid)
     except Exception as e:
         print(e)
         return None
