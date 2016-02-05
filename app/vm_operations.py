@@ -4,7 +4,7 @@ import shutil
 import threading
 import glob
 import os
-from sh import vboxmanage, grep, sed, cut, wc
+from sh import vboxmanage, grep, sed, cut, wc, awk
 from config import DEFAULT_BOX, BOX_SNAPSHOT, HOST_SHARED_PATH
 
 
@@ -53,8 +53,9 @@ def get_list_usb_devices():
         result = sed(sed(grep(vboxmanage.list.usbhost(), "SerialNumber"),
                          "-e s/SerialNumber://g"), "-e s/\ //g").strip()
         devices = []
-        for uuid in result.split('\n'):
-            devices.append(uuid)
+        for udid in result.split('\n'):
+            if len(udid) is 40:
+                devices.append(udid)
     except Exception as e:
         print(e)
         return None
@@ -104,20 +105,26 @@ def start_vm(vm_name):
 
 
 def get_new_port():
-    return random.randrange(1000, 1500)
+    using_ports = []
+    try:
+        for vm in get_vm_list():
+            using_ports.append(awk(grep(vboxmanage.showvminfo(vm), "portrule1"),
+                                   "{print($17)}").split(',')[0])
+    except:
+        pass
+    while True:
+        free_port = random.randrange(10000, 11000)
+        if free_port not in using_ports:
+            break
+    return free_port
 
 
-def get_number_of_vm():
-    return int(wc(vboxmanage.list.vms(), "-l"))
-
-
-def clone_vm(base_name, clone_name=None, clone_order=get_number_of_vm()):
+def clone_vm(base_name, clone_name=None):
     try:
         _remove_clone_folder(clone_name)
         vboxmanage.clonevm(base_name, '--snapshot', BOX_SNAPSHOT, '--name',
                            clone_name, '--options', 'link', '--mode', 'machine', '--register')
-        port = 10000 + clone_order
-        # TODO : Check for ios-webkit-debug-proxy port requirement
+        port = get_new_port()
         portrule = 'portrule1,tcp,,%s,,4723' % str(port)
         vboxmanage.modifyvm(clone_name, '--natpf1', portrule)
         vboxmanage.sharedfolder.add(
@@ -144,11 +151,10 @@ def clone_and_start_vm(base_name=DEFAULT_BOX, clone_name=None):
 
 def is_vm_occupied(vm_name):
     try:
-        grep(grep(vboxmanage.showvminfo(vm_name), "-A", "2",
-                  'Currently Attached USB Devices:'), 'UUID')
+        grep(grep(vboxmanage.showvminfo(vm_name), "-A", "8",
+                  'Currently Attached USB Devices:'), 'SerialNumber')
         return True
     except Exception as e:
-        print(e)
         return False
 
 
@@ -180,8 +186,7 @@ def get_vm_status(vm_name):
         else:  # poweredoff or aborted
             status = 9
         return status
-    except Exception as e:
-        print(e)
+    except:
         status = -1
         return status
 
@@ -196,7 +201,6 @@ def remove_vm_clone(name):
             os.remove(fl)
         return True
     except Exception as e:
-        print(e)
         return False
 
 
@@ -208,8 +212,6 @@ def _remove_clone_folder(clone_name):
         shutil.rmtree(clone_path)
         return True
     except OSError as e:
-        print(e)
         return True
     except Exception as e:
-        print(e)
         return False
