@@ -181,8 +181,7 @@ def get_vm_status(vm_name):
         else:  # poweredoff or aborted
             status = 9
         return status
-    except Exception as e:
-        print(e)
+    except:
         status = -1
         return status
 
