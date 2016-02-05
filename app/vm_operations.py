@@ -145,11 +145,10 @@ def clone_and_start_vm(base_name=DEFAULT_BOX, clone_name=None):
 
 def is_vm_occupied(vm_name):
     try:
-        grep(grep(vboxmanage.showvminfo(vm_name), "-A", "2",
-                  'Currently Attached USB Devices:'), 'UUID')
+        grep(grep(vboxmanage.showvminfo(vm_name), "-A", "8",
+                  'Currently Attached USB Devices:'), 'SerialNumber')
         return True
     except Exception as e:
-        print(e)
         return False
 
 
@@ -196,7 +195,6 @@ def remove_vm_clone(name):
             os.remove(fl)
         return True
     except Exception as e:
-        print(e)
         return False
 
 
@@ -208,8 +206,6 @@ def _remove_clone_folder(clone_name):
         shutil.rmtree(clone_path)
         return True
     except OSError as e:
-        print(e)
         return True
     except Exception as e:
-        print(e)
         return False
