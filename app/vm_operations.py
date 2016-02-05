@@ -54,7 +54,8 @@ def get_list_usb_devices():
                          "-e s/SerialNumber://g"), "-e s/\ //g").strip()
         devices = []
         for uuid in result.split('\n'):
-            devices.append(uuid)
+            if len(uuid) is 40:
+                devices.append(uuid)
     except Exception as e:
         print(e)
         return None
