@@ -4,7 +4,7 @@ import shutil
 import threading
 import glob
 import os
-from sh import vboxmanage, grep, sed, cut, wc
+from sh import vboxmanage, grep, sed, cut, wc, awk
 from config import DEFAULT_BOX, BOX_SNAPSHOT, HOST_SHARED_PATH
 
 
@@ -105,20 +105,27 @@ def start_vm(vm_name):
 
 
 def get_new_port():
-    return random.randrange(1000, 1500)
+    using_ports = []
+    try:
+        for vm in get_vm_list():
+            using_ports.append(awk(grep(vboxmanage.showvminfo(vm), "portrule1"),
+                                   "{print($17)}").split(',')[0])
+    except:
+        pass
+    while True:
+        free_port = random.randrange(10000, 11000)
+        if free_port not in using_ports:
+            break
+    return free_port
 
 
-def get_number_of_vm():
-    return int(wc(vboxmanage.list.vms(), "-l"))
-
-
-def clone_vm(base_name, clone_name=None, clone_order=get_number_of_vm()):
+def clone_vm(base_name, clone_name=None):
     try:
         _remove_clone_folder(clone_name)
         vboxmanage.clonevm(base_name, '--snapshot', BOX_SNAPSHOT, '--name',
                            clone_name, '--options', 'link', '--mode', 'machine', '--register')
-        port = 10000 + clone_order
         # TODO : Check for ios-webkit-debug-proxy port requirement
+        port = get_new_port()
         portrule = 'portrule1,tcp,,%s,,4723' % str(port)
         vboxmanage.modifyvm(clone_name, '--natpf1', portrule)
         vboxmanage.sharedfolder.add(
