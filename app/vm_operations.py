@@ -36,6 +36,7 @@ def device_status_daemon():
         elif vms:
             for vm in vms:
                 if vm != DEFAULT_BOX:
+                    print("Remove vm -> " + vm)
                     remove_vm_clone(vm)
 
     t = threading.Timer(5.0, procedure)
@@ -55,8 +56,7 @@ def get_list_usb_devices():
         for udid in result.split('\n'):
             if len(udid) is 40:
                 devices.append(udid)
-    except Exception as e:
-        print(e)
+    except:
         return None
     else:
         return devices
