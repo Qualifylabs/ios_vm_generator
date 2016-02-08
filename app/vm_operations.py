@@ -36,7 +36,6 @@ def device_status_daemon():
         elif vms:
             for vm in vms:
                 if vm != DEFAULT_BOX:
-                    print("Remove vm -> " + vm)
                     remove_vm_clone(vm)
 
     t = threading.Timer(5.0, procedure)
@@ -165,8 +164,7 @@ def shutdown_vm(vm_name):
             return True
         else:
             return False
-    except Exception as e:
-        print(e)
+    except:
         return False
 
 
