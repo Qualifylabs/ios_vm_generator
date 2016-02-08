@@ -35,7 +35,7 @@ def device_status_daemon():
                     print("Device is up and running -> " + device_id)
         elif vms:
             for vm in vms:
-                if vm != DEFAULT_BOX:
+                if vm != DEFAULT_BOX and len(vms) > 1:
                     print("Remove vm -> " + vm)
                     remove_vm_clone(vm)
 
