@@ -24,8 +24,8 @@ def device_status_daemon():
                 vm_status = get_vm_status(device_id)
                 if device_id in vms and vm_status > 2:
                     try:
-                        print("Start vm -> " + vm)
-                        start_vm(vm)
+                        print("Start vm -> " + device_id)
+                        start_vm(device_id)
                     except Exception as e:
                         print(e)
                 elif device_id not in vms:
@@ -34,8 +34,8 @@ def device_status_daemon():
                     print("Device is up and running -> " + device_id)
         elif vms:
             for vm in vms:
-                if vm != DEFAULT_BOX and len(vms) > 1 and len(vm) is 40:
-                    print("Remove vm -> " + vm)
+                if vm != DEFAULT_BOX and len(vms) > 1 and len(vm) is 40 and get_vm_status(vm) is not 9:
+                    print("Shutdown vm -> " + vm)
                     shutdown_vm(vm)
 
     t = threading.Timer(5.0, procedure)
