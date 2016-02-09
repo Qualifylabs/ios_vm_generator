@@ -26,12 +26,12 @@ def device_status_daemon():
                     try:
                         print("Start vm -> " + device_id)
                         start_vm(device_id)
+                        print("Device is up and running -> " + device_id)
                     except Exception as e:
                         print(e)
                 elif device_id not in vms:
                     clone_and_start_vm(clone_name=device_id)
-                else:
-                    print("Device is up and running -> " + device_id)
+                    print("New vm created and started -> " + device_id)
         elif vms:
             for vm in vms:
                 if vm != DEFAULT_BOX and len(vms) > 1 and len(vm) is 40 and get_vm_status(vm) is not 9:
