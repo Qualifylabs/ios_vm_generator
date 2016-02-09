@@ -106,8 +106,8 @@ def get_new_port():
     using_ports = []
     try:
         for vm in get_vm_list():
-            using_ports.append(awk(grep(vboxmanage.showvminfo(vm), "portrule1"),
-                                   "{print($17)}").split(',')[0])
+            using_ports.append(int(awk(grep(vboxmanage.showvminfo(vm), "portrule1"),
+                                       "{print($17)}").split(',')[0]))
     except:
         pass
     while True:
