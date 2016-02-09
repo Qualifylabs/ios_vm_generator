@@ -4,7 +4,6 @@ import tempfile
 
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-HOST_SHARED_PATH = tempfile.mkdtemp()
 
 # Base
 DEBUG = False

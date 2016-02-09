@@ -5,7 +5,7 @@ import threading
 import glob
 import os
 from sh import vboxmanage, grep, sed, cut, wc, awk
-from config import DEFAULT_BOX, BOX_SNAPSHOT, HOST_SHARED_PATH
+from config import DEFAULT_BOX, BOX_SNAPSHOT
 
 
 #####################
@@ -125,9 +125,7 @@ def clone_vm(base_name, clone_name=None):
         port = get_new_port()
         portrule = 'portrule1,tcp,,%s,,4723' % str(port)
         vboxmanage.modifyvm(clone_name, '--natpf1', portrule)
-        vboxmanage.sharedfolder.add(
-            clone_name, "--name", "sharedfolder", "--hostpath", HOST_SHARED_PATH)
-        filename = "%s/%s_%s" % (HOST_SHARED_PATH, clone_name, port)
+        filename = "/tmp/%s_%s" % (clone_name, port)
         open(filename, 'w+')
         return True
     except Exception as e:
@@ -193,7 +191,7 @@ def remove_vm_clone(name):
         shutdown_vm(name)
         vboxmanage.unregistervm(name, '--delete')
         time.sleep(1)
-        tmp_file = HOST_SHARED_PATH + "/" + name + "*"
+        tmp_file = "/tmp" + name + "*"
         for fl in glob.glob(tmp_file):
             os.remove(fl)
         return True
