@@ -24,20 +24,19 @@ def device_status_daemon():
                 vm_status = get_vm_status(device_id)
                 if device_id in vms and vm_status > 2:
                     try:
-                        print("Remove the unused vm -> " + device_id)
-                        remove_vm_clone(vm)
+                        print("Start vm -> " + vm)
+                        start_vm(vm)
                     except Exception as e:
                         print(e)
-                        # TODO: Handle if could not delete
                 elif device_id not in vms:
                     clone_and_start_vm(clone_name=device_id)
                 else:
                     print("Device is up and running -> " + device_id)
         elif vms:
             for vm in vms:
-                if vm != DEFAULT_BOX and len(vms) > 1:
+                if vm != DEFAULT_BOX and len(vms) > 1 and len(vm) is 40:
                     print("Remove vm -> " + vm)
-                    remove_vm_clone(vm)
+                    shutdown_vm(vm)
 
     t = threading.Timer(5.0, procedure)
     t.start()
