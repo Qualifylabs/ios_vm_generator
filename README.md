@@ -18,4 +18,3 @@ python run.py
 ### TODO
 
 * Add any logger library
-* Check for ios-webkit-debug-proxy port requirement

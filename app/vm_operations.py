@@ -1,10 +1,8 @@
 import time
-import random
 import shutil
 import threading
-import glob
 import os
-from sh import vboxmanage, grep, sed, cut, wc, awk
+from sh import vboxmanage, grep, sed, cut
 from config import DEFAULT_BOX, BOX_SNAPSHOT
 
 
@@ -102,31 +100,11 @@ def start_vm(vm_name):
         return False
 
 
-def get_new_port():
-    using_ports = []
-    try:
-        for vm in get_vm_list():
-            using_ports.append(int(awk(grep(vboxmanage.showvminfo(vm), "portrule1"),
-                                       "{print($17)}").split(',')[0]))
-    except:
-        pass
-    while True:
-        free_port = random.randrange(10000, 11000)
-        if free_port not in using_ports:
-            break
-    return free_port
-
-
 def clone_vm(base_name, clone_name=None):
     try:
         _remove_clone_folder(clone_name)
         vboxmanage.clonevm(base_name, '--snapshot', BOX_SNAPSHOT, '--name',
                            clone_name, '--options', 'link', '--mode', 'machine', '--register')
-        port = get_new_port()
-        portrule = 'portrule1,tcp,,%s,,4723' % str(port)
-        vboxmanage.modifyvm(clone_name, '--natpf1', portrule)
-        filename = "/tmp/%s_%s" % (clone_name, port)
-        open(filename, 'w+')
         return True
     except Exception as e:
         print(e)
@@ -191,9 +169,6 @@ def remove_vm_clone(name):
         shutdown_vm(name)
         vboxmanage.unregistervm(name, '--delete')
         time.sleep(1)
-        tmp_file = "/tmp" + name + "*"
-        for fl in glob.glob(tmp_file):
-            os.remove(fl)
         return True
     except Exception as e:
         return False
