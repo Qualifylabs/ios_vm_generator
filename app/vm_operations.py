@@ -1,11 +1,9 @@
 import time
-import random
 import shutil
 import threading
-import glob
 import os
-from sh import vboxmanage, grep, sed, cut, wc, awk
-from config import DEFAULT_BOX, BOX_SNAPSHOT, HOST_SHARED_PATH
+from sh import vboxmanage, grep, sed, cut
+from config import DEFAULT_BOX, BOX_SNAPSHOT
 
 
 #####################
@@ -24,20 +22,19 @@ def device_status_daemon():
                 vm_status = get_vm_status(device_id)
                 if device_id in vms and vm_status > 2:
                     try:
-                        print("Remove the unused vm -> " + device_id)
-                        remove_vm_clone(vm)
+                        print("Start vm -> " + device_id)
+                        start_vm(device_id)
+                        print("Device is up and running -> " + device_id)
                     except Exception as e:
                         print(e)
-                        # TODO: Handle if could not delete
                 elif device_id not in vms:
                     clone_and_start_vm(clone_name=device_id)
-                else:
-                    print("Device is up and running -> " + device_id)
+                    print("New vm created and started -> " + device_id)
         elif vms:
             for vm in vms:
-                if vm != DEFAULT_BOX:
-                    print("Remove vm -> " + vm)
-                    remove_vm_clone(vm)
+                if vm != DEFAULT_BOX and len(vms) > 1 and len(vm) is 40 and get_vm_status(vm) is not 9:
+                    print("Shutdown vm -> " + vm)
+                    shutdown_vm(vm)
 
     t = threading.Timer(5.0, procedure)
     t.start()
@@ -103,33 +100,11 @@ def start_vm(vm_name):
         return False
 
 
-def get_new_port():
-    using_ports = []
-    try:
-        for vm in get_vm_list():
-            using_ports.append(awk(grep(vboxmanage.showvminfo(vm), "portrule1"),
-                                   "{print($17)}").split(',')[0])
-    except:
-        pass
-    while True:
-        free_port = random.randrange(10000, 11000)
-        if free_port not in using_ports:
-            break
-    return free_port
-
-
 def clone_vm(base_name, clone_name=None):
     try:
         _remove_clone_folder(clone_name)
         vboxmanage.clonevm(base_name, '--snapshot', BOX_SNAPSHOT, '--name',
                            clone_name, '--options', 'link', '--mode', 'machine', '--register')
-        port = get_new_port()
-        portrule = 'portrule1,tcp,,%s,,4723' % str(port)
-        vboxmanage.modifyvm(clone_name, '--natpf1', portrule)
-        vboxmanage.sharedfolder.add(
-            clone_name, "--name", "sharedfolder", "--hostpath", HOST_SHARED_PATH)
-        filename = "%s/%s_%s" % (HOST_SHARED_PATH, clone_name, port)
-        open(filename, 'w+')
         return True
     except Exception as e:
         print(e)
@@ -194,9 +169,6 @@ def remove_vm_clone(name):
         shutdown_vm(name)
         vboxmanage.unregistervm(name, '--delete')
         time.sleep(1)
-        tmp_file = HOST_SHARED_PATH + "/" + name + "*"
-        for fl in glob.glob(tmp_file):
-            os.remove(fl)
         return True
     except Exception as e:
         return False
