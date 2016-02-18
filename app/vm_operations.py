@@ -30,11 +30,12 @@ def device_status_daemon():
                 elif device_id not in vms:
                     clone_and_start_vm(clone_name=device_id)
                     print("New vm created and started -> " + device_id)
-        elif vms:
-            for vm in vms:
-                if vm != DEFAULT_BOX and len(vms) > 1 and len(vm) is 40 and get_vm_status(vm) is not 9:
-                    print("Shutdown vm -> " + vm)
-                    shutdown_vm(vm)
+        running_vms = get_running_vm_list()
+        for vm in running_vms:
+            device_status = not vm in devices
+            if vm != DEFAULT_BOX and len(vm) is 40 and get_vm_status(vm) is not 9 and device_status:
+                print("Shutdown vm -> " + vm)
+                shutdown_vm(vm)
 
     t = threading.Timer(5.0, procedure)
     t.start()
@@ -78,6 +79,20 @@ def get_vm_list():
     # TODO: Handle empty space name vms.
     try:
         vms = sed(sed(vboxmanage.list.vms(), '-e s/ .*$//'), 's/"//g').strip()
+        vm_list = []
+        for vm in vms.split('\n'):
+            vm_list.append(str(vm))
+        return vm_list
+    except Exception as e:
+        print(e)
+        return []
+
+
+def get_running_vm_list():
+    # TODO: Handle empty space name vms.
+    try:
+        vms = sed(sed(vboxmanage.list.runningvms(),
+                      '-e s/ .*$//'), 's/"//g').strip()
         vm_list = []
         for vm in vms.split('\n'):
             vm_list.append(str(vm))
