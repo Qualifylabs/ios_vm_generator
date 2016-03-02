@@ -55,7 +55,7 @@ def get_list_usb_devices():
             if len(udid) is 40:
                 devices.append(udid)
     except:
-        return None
+        return []
     else:
         return devices
 
