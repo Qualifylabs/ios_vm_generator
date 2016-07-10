@@ -1,6 +1,5 @@
 import time
 import shutil
-import threading
 import os
 from sh import vboxmanage, grep, sed, cut
 from config import DEFAULT_BOX, BOX_SNAPSHOT
@@ -10,11 +9,8 @@ from config import DEFAULT_BOX, BOX_SNAPSHOT
 ## Device Listener ##
 #####################
 
-
 def device_status_daemon():
     def procedure():
-        t = threading.Timer(5.0, procedure)
-        t.start()
         devices = get_list_usb_devices()
         vms = get_vm_list()
         if devices:
@@ -37,8 +33,9 @@ def device_status_daemon():
                 print("Shutdown vm -> " + vm)
                 shutdown_vm(vm)
 
-    t = threading.Timer(5.0, procedure)
-    t.start()
+    while True:
+        time.sleep(5)
+        procedure()
 
 
 #######################
