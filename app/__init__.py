@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from flask import Flask
 from vm_operations import device_status_daemon
+import threading
 
 
 def create_app():
@@ -13,6 +14,7 @@ def create_app():
 
     _url = "/{}/{}".format(app.config['API_NAME'], app.config['API_VERSION'])
 
-    device_status_daemon()
+    thread = threading.Thread(target=device_status_daemon)
+    thread.start()
 
     return app

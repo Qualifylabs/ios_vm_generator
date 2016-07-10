@@ -3,7 +3,7 @@
 ### Requirements
 
 * Virtualbox
-* Base OS Image (OSX or Linux)
+* Base OSX Image
 
 ### Quick Start
 
